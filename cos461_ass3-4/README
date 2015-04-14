@@ -1,0 +1,54 @@
+================================================================
+
+    README file for Assignment 4 - Simple TCP
+
+           Name: Nader Al-Naji
+ Username/Login: nbal
+ 
+================================================================
+
+I think my design decisions were pretty standard and evident
+from a cursory look at the code; I will highlight the salient
+points here. 
+
+SYN/ACK:
+	Right now, I fire and forget my network initiation packets.
+Obviously this will change for assignment 4. The one thing to
+note here is, when receiving network initiation packets, I set
+my sender window to the other side's advertised receiver window.
+Here it doesn't do anything because our windows are fixed and 
+the same size-- but it could.
+
+Pointers:
+	In order to keep track of what data we've sent, received, and
+gotten ACKS for, I made three variables next_to_send, 
+next_to_recv, and next_to_be_acked respectively.
+
+Vectors:
+	In order to keep packets I've sent (but may not have been 
+received) for retransmission, I made a packetsInFlight vector.
+Every time I send a packet, I add it to this vector. Every time
+I get an ack for a packet, I remove it from the vector.
+
+	In order to be able to accept data out of order and ACK the
+right bit, even when, say packets 5 and 8 have been received
+but not 6 or 7, I keep a vector of the packets I've received
+that lie within the window and sort it when I want to figure 
+out the next byte I need. After they're all in order, I walk 
+through the sorted list of received packets and increment 
+next_to_recv to the proper index, send them up to the client,
+and then remove them from the vector.
+
+
+ACKs:
+	When I get an ACK, I update next_to_be_acked and remove it
+from the packetsInFlight vector.
+
+FINs:
+	When I get a FIN packet, I update the state of the DFA for
+application closing, send whatever I need send (ACK) and process 
+any data that came with it.
+
+
+I don't think I've missed anything, but I've thoroughly commented
+the code just in case anything is unclear.

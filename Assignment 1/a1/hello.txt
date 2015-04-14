@@ -1,0 +1,12 @@
+GET /forums/upfiles/17117/D2C36687ED8246BBAF3EE14AB8929417.jpg HTTP/1.1
+Host: www.myitforum.com
+Connection: keep-alive
+Referer: http://www.myitforum.com/forums/tm.aspx?high=&m=200965&mpage=1
+Accept: */*
+User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-US) AppleWebKit/534.13 (KHTML, like Gecko) Chrome/9.0.597.102 Safari/534.13
+Accept-Encoding: gzip,deflate,sdch
+Accept-Language: en-US,en;q=0.8
+Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3
+Cookie: ASP.NET_SessionId=tvib4gfzmv4bdk55mjflyu45; forumsv3backURL=/forums/tm.aspx?high=&m=200965&mpage=1; forumsv3preURL=; forumsv3visitedThreads=200965,
+
+

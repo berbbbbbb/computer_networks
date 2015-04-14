@@ -1,0 +1,152 @@
+===============================================================
+
+    README file for Assignment 2 - Simple Router
+
+           Name: Nader Al-Naji
+ Username/Login: nbal
+ 
+================================================================
+
+We require that you first provide yes/no answers about the components you implemented and then provide details later.
+
+**************** Yes/No Answers **************
+
+1) The router can successfully route packets between the firewall and the application servers? 
+
+Yes
+
+2) The router correctly handles ARP requests and replies?
+
+Yes
+
+3) The router correctly handles traceroutes through it (where it is not the end host) and to it (where it is the end host)?
+
+Yes
+
+4) The router responds correctly to ICMP echo requests?
+
+Yes
+
+5) The router handles TCP/UDP packets sent to one of its interfaces. In this case the router should respond with an ICMP port unreachable?
+
+Yes
+
+6) The router maintains an ARP cache whose entries are invalidated after a timeout period (timeouts should be on the order of 15 seconds)?
+
+Yes-- guaranteed.
+
+7) The router queues all packets waiting for outstanding ARP replies. If a host does not respond to 5 ARP requests, the queued packet is dropped and an ICMP host unreachable message is sent back to the source of the queued packet?
+
+Yes
+
+8) The router does not needlessly drop packets (for example when waiting for an ARP reply)?
+
+Yes
+
+**************** Yes/No Answers (EXTRA CREDIT) **************
+
+1) Does your code provide guaranteed timeouts? 
+
+Yes
+
+2) Can you drop and log all packets arriving to the external interface and destined to an internal interface in SE mode?
+
+Yes (The actual packets are logged in the file "dropped.log." 
+     Their 5-tuples, with reason for drop, are logged in the
+     file "unservedFlows.log.")
+      
+
+3) Can you supporting outbound two-way TCP traffic?
+
+Yes. See 2) above.
+
+Note: If you put a bang	(!) after the second parenthesis on line ~491, you
+      reverse the rule and, if you ping the router and check the 
+      "unservedFlows.log" file after a letting it run for a minute or so, 
+      you can easily verify that it is doing this correctly.
+      
+
+
+**************** Brief Answers **************
+
+Briefly describe how you confirmed (tested) your
+router had each of the *Required Functionalities*:
+
+* The router can successfully route packets between the firewall and
+  the application servers.
+I made the eth1/eth2 external and eth0 internal and checked the output
+after letting it run for a minute or so. The behavior was as expected.
+
+* The router correctly handles ARP requests and replies.
+My code produces output on events like when it sends/receives ARP
+request. Looking at this code, it was easy to verify that everything
+was happening in the proper order. (Arp request to router, response from
+router, request to appserver, etc..)
+
+* The router correctly handles traceroutes through it (where it is not
+  the end host) and to it (where it is the end host).
+Ran traceroute on the router and compared the results to the 
+example-- matched exactly.
+
+* The router responds correctly to ICMP echo requests.
+Pinged the router-- 0% packet loss.
+
+
+* The router handles TCP/UDP packets sent to one of its interfaces. In
+  this case the router should respond with an ICMP port unreachable.
+Used wireshark to verify that the packet returned was indeed an ICMP
+port unreach message.
+
+* The router maintains an ARP cache whose entries are invalidated
+  after a timeout period (timeouts should be on the order of 15
+  seconds).
+Had my program produce output every time it "forgets" a MAC address. They 
+all happened at 15 second intervals and the time between each ARP was
+preserved (because the timeouts are guaranteed.)
+
+* The router queues all packets waiting for outstanding ARP
+  replies. If a host does not respond to 5 ARP requests, the queued
+  packet is dropped and an ICMP host unreachable message is sent back
+  to the source of the queued packet.
+To test this I broke my ARP request function and let the router
+attempt to send a packet five times. Upon failure, I used wireshark
+to verify that the packet returned to the host by the router was indeed 
+a host unreach message.
+
+* The router does not needlessly drop packets (for example when
+  waiting for an ARP reply)
+The router uses a queue and this behavior was easily verified using
+ping and observing the output.
+
+**************** Brief Answers (EXTRA CREDIT) **************
+
+* Provide guaranteed timeouts
+I used signals to implement this. To test that it worked, I used a timer
+and made sure the events were happening at twenty second intervals (the
+timeout value I chose) in spite of no packets being sent to the router.
+
+
+* Drop and log all packets arriving to the external interface and destined to an internal interface in SE mode
+My router logs both the actual packet dropped and the 5-tuple representing
+the flow associated with the packet. The files generated are as expected.
+To implement this I just denied any packets coming into the eth0 interface.
+
+* Supporting outbound two-way TCP traffic
+To implement this I used a C++ vector of flows, with a time value added 
+to support soft-state, updated it where appropriate. The firewall checks
+the vector to see if a flow is in the list and blocks the packet if it 
+isn't (and is coming in on a blocked interface).
+
+
+
+================================================================
+
+DESCRIBE YOUR CODE HERE AND DESIGN DECISIONS YOU MADE
+Most of my design decisions were pretty standard: a queue to avoid dropping
+packets, an array for an ARP cache, signals for guaranteed timeouts, 
+a structure for flows, etc.. The code should be pretty readable if anything
+isn't elaborated enough but one of the important things to note about how
+I did this assignment is that I didn't use any of the libraries to construct
+packets, instead choosing to write the code myself. The assignment
+specification said this was acceptable and I felt it made the code a lot
+cleaner so I didn't think it would be an issue-- hopefully it isn't. 

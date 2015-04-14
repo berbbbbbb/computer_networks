@@ -1,0 +1,8 @@
+set host [lindex $argv 0]
+set infilename [lindex $argv 1]
+set infile [open $infilename r ]
+spawn telnet  "$host"
+while [ gets $infile line ] {
+    sleep 1
+    send -- $line
+    }

@@ -1,0 +1,34 @@
+================================================================
+
+    README file for Assignment 1 - HTTP Proxy
+
+           Name: Nader Al-Naji
+ Username/Login: nbal
+ 
+================================================================
+
+DESCRIBE YOUR CODE HERE AND DESIGN DECISIONS YOU MADE
+Everything I did in terms of connecting with the client and
+server was pretty standard. I create a socket, bind it to
+the the right port, and then listen for clients to 
+request a connection, accepting them one by one. Every time I 
+accept a client I fork a new child process as specified unless
+the number of active children is less than some fixed value
+(MAX_CONNECTIONS). If I already have too many active client
+connections, I sleep for a second to give them time to finish up
+and then repeat. In the fork, I create a dynamically expanding
+array and read into it MAX_LINE_SIZE bytes at a time. 
+If the end of the array ever contains a \r\n\r\n, or something
+like it for leniance, I stop receiving from the client, fix 
+up the request, forward to the server, using the standard connect
+procedure from before, and then forward the response immediately 
+back to the client. In between all of this, I handle all of 
+the errors specified in the assignment sheet and report
+them back to the client upon failure. It should also be noted
+that I have a handler for SIGCHLD signals that uses waitpid
+to take care of zombies. Also, I defined a sendall() function
+that reliably sends all of the bytes it is told to (unlike
+send which can end up sending fewer bytes). If sendall is 
+unsuccessful for whatever reason, it returns -1. In terms of
+help I received on this assignment, I didn't really talk to 
+anyone but I did find Beej's manual very useful.
